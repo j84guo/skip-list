@@ -1,8 +1,8 @@
-CC :=clang++
+CC := g++ # clang++
 
 SRCDIR := src
 BINDIR := bin
-TARGET := bin/dht
+TARGET := bin/skiplist
 INCDIR := include
 
 SRCEXT := cpp
