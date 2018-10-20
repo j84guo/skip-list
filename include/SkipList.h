@@ -20,22 +20,23 @@ public:
     ~SkipList();
 
     void put(K key, V value);
-    void erase(K key) throw(runtime_error);
+    void erase(K key);
 
     bool containsKey(K key);
 
-    V get(K key) throw(runtime_error);
+    V get(K key);
 
 private:
     bool randomBool() const;
-    bool lastNodeOnLevel(SkipNode<K,V>* node) const throw(runtime_error);
+    bool lastNodeOnLevel(SkipNode<K,V>* node) const;
     bool lessOrEqual(SkipNode<K,V>* a, K key) const;
 
-    void insertAfterAbove(SkipNode<K,V>* a, SkipNode<K,V>* b, K key, V value, int level);
-    void eraseSentinel(SkipNode<K,V>* node) throw(runtime_error);
+    void insertAfterAbove(SkipNode<K,V>* a, SkipNode<K,V>* b, K key, V value, 
+        int level);
+    void eraseSentinel(SkipNode<K,V>* node);
     void initializeEmptyLevel();
-    void initializeBaseLevel() throw(runtime_error);
-    void newTopLevel() throw(runtime_error);
+    void initializeBaseLevel();
+    void newTopLevel();
 
     SkipNode<K,V>* skipSearch(K key);
 
@@ -51,7 +52,8 @@ private:
 template <typename K2, typename V2, typename C2>
 ostream& operator<<(ostream& out, const SkipList<K2,V2,C2>& sl)
 {
-    for(SkipNode<K2,V2>* level = sl.start; level != nullptr; level = level->down) {
+    for (SkipNode<K2,V2>* level = sl.start; level != nullptr;
+        level = level->down) {
         for(SkipNode<K2,V2>* node = level; node != nullptr; node = node->right)
             out << node->key << " ";
         out << endl;
@@ -67,11 +69,11 @@ ostream& operator<<(ostream& out, const SkipList<K2,V2,C2>& sl)
 * free node memory
 */
 template <typename K, typename V, typename C>
-void SkipList<K,V,C>::erase(K key) throw(runtime_error)
+void SkipList<K,V,C>::erase(K key)
 {
     SkipNode<K,V>* node = skipSearch(key);
 
-    if(node->smallest || compare(node->key, key) != 0)
+    if (node->smallest || compare(node->key, key) != 0)
         throw runtime_error("Key does not exist.");
 
     SkipNode<K,V>* upper = nullptr;
@@ -80,8 +82,7 @@ void SkipList<K,V,C>::erase(K key) throw(runtime_error)
         node->left->right = node->right;
         node->right->left = node->left;
 
-        if(lastNodeOnLevel(node) && node->left->down != nullptr)
-        {
+        if (lastNodeOnLevel(node) && node->left->down != nullptr) {
             cout << "removing an empty level" << endl;
             eraseSentinel(node->left);
             eraseSentinel(node->right);
@@ -89,13 +90,13 @@ void SkipList<K,V,C>::erase(K key) throw(runtime_error)
 
         delete node;
         node = upper;
-    } while(upper != nullptr);
+    } while (upper != nullptr);
 }
 
 template <typename K, typename V, typename C>
-bool SkipList<K,V,C>::lastNodeOnLevel(SkipNode<K,V>* node) const throw(runtime_error)
+bool SkipList<K,V,C>::lastNodeOnLevel(SkipNode<K,V>* node) const
 {
-    if(node == nullptr)
+    if (node == nullptr)
         throw runtime_error("Node is null.");
 
     return node->left != nullptr && node->right != nullptr
@@ -103,17 +104,17 @@ bool SkipList<K,V,C>::lastNodeOnLevel(SkipNode<K,V>* node) const throw(runtime_e
 }
 
 template <typename K, typename V, typename C>
-void SkipList<K,V,C>::eraseSentinel(SkipNode<K,V>* node) throw(runtime_error)
+void SkipList<K,V,C>::eraseSentinel(SkipNode<K,V>* node)
 {
     cout << "called eraseSentinel" << endl;
 
-    if(node == nullptr)
+    if (node == nullptr)
         throw runtime_error("Node is null.");
 
-    if(!node->smallest && !node->largest)
+    if (!node->smallest && !node->largest)
         throw runtime_error("Node is not a sentinel.");
 
-    if(node->up == nullptr || node->down == nullptr)
+    if (node->up == nullptr || node->down == nullptr)
         throw runtime_error("Node is not a deletable sentinel.");
 
     node->up->down = node->down;
@@ -140,9 +141,9 @@ void SkipList<K,V,C>::initializeEmptyLevel()
 }
 
 template <typename K, typename V, typename C>
-void SkipList<K,V,C>::initializeBaseLevel() throw(runtime_error)
+void SkipList<K,V,C>::initializeBaseLevel()
 {
-    if(start == nullptr)
+    if (start == nullptr)
         throw runtime_error("Start is a null pointer.");
 
     // create sentinels
@@ -160,9 +161,9 @@ void SkipList<K,V,C>::initializeBaseLevel() throw(runtime_error)
 
 // join positive infinity sentinels
 template <typename K, typename V, typename C>
-void SkipList<K,V,C>::newTopLevel() throw(runtime_error)
+void SkipList<K,V,C>::newTopLevel()
 {
-    if(start == nullptr)
+    if (start == nullptr)
         throw runtime_error("Start is a null pointer.");
 
     // create new sentinels
@@ -208,7 +209,7 @@ void SkipList<K,V,C>::put(K key, V value)
 }
 
 template <typename K, typename V, typename C>
-V SkipList<K,V,C>::get(K key) throw(runtime_error)
+V SkipList<K,V,C>::get(K key)
 {
     SkipNode<K,V>* node = skipSearch(key);
 
@@ -219,7 +220,8 @@ V SkipList<K,V,C>::get(K key) throw(runtime_error)
 }
 
 template <typename K, typename V, typename C>
-void SkipList<K,V,C>::insertAfterAbove(SkipNode<K,V>* a, SkipNode<K,V>* b, K key, V value, int level)
+void SkipList<K,V,C>::insertAfterAbove(SkipNode<K,V>* a, SkipNode<K,V>* b,
+    K key, V value, int level)
 {
     cout << "called insertAfterAbove()" << endl;
 
@@ -240,16 +242,16 @@ void SkipList<K,V,C>::insertAfterAbove(SkipNode<K,V>* a, SkipNode<K,V>* b, K key
     node->left = a;
 
     // update down and up pointers if b was not nullptr
-    if(b != nullptr) {
+    if (b != nullptr) {
         node->down = b;
         b->up = node;
     }
 
     // extend upwards with 1/2 probability
-    if(randomBool()) {
+    if (randomBool()) {
         cout << "continue upwards" << endl;
 
-        while(a->up == nullptr)
+        while (a->up == nullptr)
             a = a->left;
 
         insertAfterAbove(a->up, node, key, value, level + 1);
@@ -270,20 +272,19 @@ SkipNode<K,V>* SkipList<K,V,C>::skipSearch(K key)
     * using the invariant that our skiplist always has at least height 1 (empty
     * layer on top of base layer) we can descend immediately and scan forwards
     */
-    SkipNode<K,V>* node = start;
-    SkipNode<K,V>* it = nullptr;
+    SkipNode<K,V>* node = start; 
 
     do {
         node = node->down;
 
         /*
-        * using the invariant that a level always begins with negative infinity and
-        * ends with positive inifinity we check that the next element is not
-        * positive infinity or <= before moving right
+        * using the invariant that a level always begins with negative infinity
+        * and ends with positive inifinity we check that the next element is
+        * not positive infinity or <= before moving right
         */
-        while(!node->right->largest && lessOrEqual(node->right, key))
+        while (!node->right->largest && lessOrEqual(node->right, key))
             node = node->right;
-    } while(node->down != nullptr);
+    } while (node->down != nullptr);
 
     return node;
 }
@@ -291,10 +292,10 @@ SkipNode<K,V>* SkipList<K,V,C>::skipSearch(K key)
 template <typename K, typename V, typename C>
 bool SkipList<K,V,C>::lessOrEqual(SkipNode<K,V>* node, K key) const
 {
-    if(node->smallest)
+    if (node->smallest)
         return true;
 
-    if(node->largest)
+    if (node->largest)
         return false;
 
     return compare(node->key, key) <= 0;

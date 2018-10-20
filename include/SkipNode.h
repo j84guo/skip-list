@@ -38,8 +38,8 @@ private:
 };
 
 /*
-* leaves key and value default initialized for class types and uninitialized for
-* numeric types
+* leaves key and value default initialized for class types and uninitialized
+* for numeric types
 */
 template <typename K, typename V>
 SkipNode<K,V>::SkipNode(bool smallest, bool largest):
