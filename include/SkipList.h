@@ -188,7 +188,18 @@ void SkipList<K,V,C>::newTopLevel()
 */
 template <typename K, typename V, typename C>
 SkipList<K,V,C>::~SkipList()
-{ }
+{
+    SkipNode<K, V>* node = start;
+
+    while (node->down != nullptr)
+        node = node->down;
+
+    while (!node->right->largest) {
+        node = node->right;
+        K key = node->key;
+        erase(key);
+    }
+}
 
 template <typename K, typename V, typename C>
 bool SkipList<K,V,C>::randomBool() const
@@ -202,10 +213,14 @@ void SkipList<K,V,C>::put(K key, V value)
 {
     SkipNode<K,V> *node = skipSearch(key);
 
-    if (node->smallest || compare(node->key, key) != 0)
+    if (node->smallest || compare(node->key, key) != 0) {
         insertAfterAbove(node, nullptr, key, value, 0);
-    else
-        node->value = value;
+    } else {
+        while(node != nullptr) {
+            node->value = value;
+            node = node->up;
+        }
+    }
 }
 
 template <typename K, typename V, typename C>
